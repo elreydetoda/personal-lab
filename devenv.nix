@@ -19,6 +19,7 @@ in
     unzip
     glibcLocales
     sops
+    age
     direnv
     bash-completion
     pkgs-unstable.talhelper
@@ -74,6 +75,7 @@ in
     mkdir -p "$(git rev-parse --show-toplevel)/.devenv/bin"
     t_wrap version
     export PATH="$(git rev-parse --show-toplevel)/.devenv/bin/":$PATH
+    source <(talosctl completion bash)
   '';
 
   # https://devenv.sh/tasks/

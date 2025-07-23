@@ -20,6 +20,7 @@ devenv.local.nix
 *.log
 provider.hcl
 server.hcl
+clusterconfig/
 
 ### Terragrunt ###
 # terragrunt cache directories

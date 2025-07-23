@@ -1,0 +1,174 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
+# found & used following as inspiration:
+#   - https://github.com/bpg/home-ops/blob/1f8f34a17efd69b64355479e3e4471b741efabbd/talos/talconfig.yaml
+#   - https://github.com/budimanjojo/talhelper/blob/fb87d9313d1605ef68602881bebf5af8d782eb51/example/talconfig.yaml
+#   - https://github.com/bjw-s-labs/home-ops/blob/c4b67b45bf74214ac2363c71cd286b5203990049/kubernetes/talos/talconfig.yaml
+---
+clusterName: pokemon-palace
+
+# renovate: depName=ghcr.io/siderolabs/installer datasource=docker
+talosVersion: v1.10.5
+# renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
+kubernetesVersion: v1.33.3
+
+endpoint: https://new-island.prd.elrey.casa:6443
+additionalApiServerCertSans: &sans
+  - new-island.prd.elrey.casa
+  - 127.0.0.1
+  - &talosControlplaneVip 172.16.20.40
+additionalMachineCertSans: *sans
+
+clusterPodNets: ["10.224.0.0/16"]
+clusterSvcNets: ["10.240.0.0/16"]
+
+# Disable built-in CNI to use Cilium
+cniConfig:
+  name: none
+
+nodes:
+  - hostname: k8s-prod-cp1
+    ipAddress: 172.16.101.0
+    installDisk: &proxmoxDisk /dev/vda
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          physical: true
+        dhcp: false
+        addresses:
+          - 172.16.101.0/23
+        routes:
+          - &internalDmzRoutes
+            network: "0.0.0.0/0"
+            gateway: "172.16.100.1"
+        vlans:
+          - &vlan20
+            vlanId: 20
+            dhcp: false
+            routes:
+              - gateway: "172.16.20.1"
+            vip:
+              ip: *talosControlplaneVip
+  - hostname: k8s-prod-cp2
+    ipAddress: 172.16.101.1
+    installDisk: *proxmoxDisk
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          physical: true
+        dhcp: false
+        addresses:
+          - 172.16.101.1/23
+        routes:
+          - *internalDmzRoutes
+        vlans:
+          - *vlan20
+
+  - hostname: "k8s-prod-cp3"
+    ipAddress: 172.16.101.2
+    installDisk: *proxmoxDisk
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          physical: true
+        dhcp: false
+        addresses:
+          - 172.16.101.2/23
+        routes:
+          - *internalDmzRoutes
+        vlans:
+          - *vlan20
+
+  - hostname: "k8s-prod-wr1"
+    ipAddress: 172.16.30.10
+    installDisk: /dev/sda
+    controlPlane: false
+    nodeLabels:
+      intel.feature.node.kubernetes.io/gpu: "true"
+    networkInterfaces:
+      - deviceSelector:
+          physical: true
+        dhcp: false
+        addresses:
+          - 172.16.30.10/24
+        routes:
+          - &dmzRoutes
+            network: "0.0.0.0/0"
+            gateway: "172.16.30.1"
+  - hostname: "k8s-prod-wr2"
+    ipAddress: 172.16.30.11
+    installDisk: *proxmoxDisk
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          physical: true
+        dhcp: false
+        addresses:
+          - 172.16.30.11/24
+        routes:
+          - *dmzRoutes
+  - hostname: "k8s-prod-wr3"
+    ipAddress: 172.16.30.12
+    installDisk: *proxmoxDisk
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          physical: true
+        dhcp: false
+        addresses:
+          - 172.16.30.12/24
+        routes:
+          - *dmzRoutes
+  # - hostname: "k8s-prod-wr3"
+  #   ipAddress: "172.16.3.23"
+  #   installDisk: "/dev/sda"
+  #   machineSpec:
+  #     secureboot: false
+  #   talosImageURL: factory.talos.dev/installer/dc7b152cb3ea99b821fcb7340ce7168313ce393d663740b791c36f6e95fc8586
+  #   controlPlane: false
+  #   networkInterfaces:
+  #     - deviceSelector:
+  #         hardwareAddr: "bc:24:11:2d:45:6b"
+  #       dhcp: false
+  #       addresses:
+  #         - "172.16.3.23/15"
+  #       routes:
+  #         - network: "0.0.0.0/0"
+  #           gateway: "172.16.0.1"
+  #       mtu: 1500
+
+# Global patches
+patches:
+  - "@./patches/global/machine-files.yaml"
+  - "@./patches/global/machine-kubelet.yaml"
+  - "@./patches/global/machine-network.yaml"
+  - "@./patches/global/machine-sysctls.yaml"
+  - "@./patches/global/machine-time.yaml"
+
+# Controller patches
+controlPlane:
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/qemu-guest-agent
+          # from blog
+          - siderolabs/iscsi-tools
+          - siderolabs/util-linux-tools
+  patches:
+    - "@./patches/controller/admission-controller-patch.yaml"
+    - "@./patches/controller/cluster.yaml"
+
+worker:
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          # - siderolabs/gasket-driver
+          # for proxmox
+          - siderolabs/qemu-guest-agent
+          # for laptop
+          - siderolabs/i915
+          - siderolabs/intel-ucode
+          # from blog
+          - siderolabs/iscsi-tools
+          - siderolabs/util-linux-tools
