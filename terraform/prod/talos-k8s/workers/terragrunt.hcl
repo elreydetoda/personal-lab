@@ -1,5 +1,5 @@
 terraform {
-  source = "../../modules/servers/talos_vm"
+  source = "../../../modules/servers/talos_vm"
 }
 
 locals {
@@ -12,16 +12,16 @@ include "root" {
 }
 
 dependency "talos_img" {
-  config_path = "../../global/downloads/talos"
+  config_path = "../../../global/downloads/talos"
 }
 
 inputs = {
   env = local.environment_vars.locals.environment
   # base vm id + the first service
-  vmid = local.environment_vars.locals.base_vmid
+  vmid = local.environment_vars.locals.base_vmid + 3
   tgt_node = local.server_vars.locals.target_node
-  node_count = 3
-  talos_worker_node = false
-  base_name = "talos-k8s"
+  node_count = 2
+  talos_worker_node = true
+  base_name = "pokemon-palace"
   disk_file_id = dependency.talos_img.outputs.id
 }
