@@ -1,0 +1,26 @@
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
+# auto-generated folders
+.ansible/
+.terraform/
+*.tfstate*
+
+# for secrets
+.envrc
+
+### Misc ###
+*.log
+provider.hcl
+server.hcl
+
+### Terragrunt ###
+# terragrunt cache directories
+**/.terragrunt-cache/*

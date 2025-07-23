@@ -1,0 +1,5 @@
+{
+    // update with absolute path
+    "ansible.python.interpreterPath": ".devenv/state/venv/bin/python",
+    "ansible.python.activationScript": ".vscode/nixos_activate.sh"
+}
