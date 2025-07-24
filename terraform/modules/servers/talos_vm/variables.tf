@@ -52,3 +52,27 @@ variable "disk_file_id" {
   type = string
   description = "disk ID from the raw downloaded image"
 }
+
+variable "ip_config" {
+  type = object({
+    ipv4 = optional(object({
+      addresses = list(string) # CIDR strings (e.g., ["172.16.101.0/23","172.16.101.1/23"]) or "dhcp"
+      gateway = optional(string)
+    }))
+    ipv6 = optional(object({
+      addresses = list(string)
+      gateway = optional(string)
+    }))
+  })
+  description = "Network configuration values"
+  default = {
+    ipv4 = {
+      # address = "${var.talos_cp_01_ip_addr}/23"
+      addresses = ["dhcp"]
+      # gateway = var.default_gateway
+      },
+    ipv6 = {
+      addresses = ["dhcp"]
+    }
+  }
+}

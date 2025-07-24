@@ -45,12 +45,16 @@ resource "proxmox_virtual_environment_vm" "talos_node" {
     datastore_id = "local-lvm"
     ip_config {
       ipv4 {
-        # address = "${var.talos_cp_01_ip_addr}/23"
-        address = "dhcp"
-        # gateway = var.default_gateway
+        address = var.ip_config.ipv4.addresses[0] != "dhcp" ? var.ip_config.ipv4.addresses[count.index] : "dhcp"
+        gateway = try(var.ip_config.ipv4.gateway, null)
       }
+
       ipv6 {
-        address = "dhcp"
+        address = try(
+          var.ip_config.ipv6.addresses[0] != "dhcp" ? var.ip_config.ipv6.addresses[count.index] : "dhcp",
+          null
+        )
+        gateway = try(var.ip_config.ipv6.gateway, null)
       }
     }
   }

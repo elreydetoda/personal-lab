@@ -24,4 +24,13 @@ inputs = {
   talos_worker_node = true
   base_name = "pokemon-palace"
   disk_file_id = dependency.talos_img.outputs.id
+  ip_config = {
+    ipv4 = {
+      addresses = [
+        "172.16.30.11/24",
+        "172.16.30.12/24",
+      ]
+      gateway = "172.16.30.1"
+    }
+  }
 }
