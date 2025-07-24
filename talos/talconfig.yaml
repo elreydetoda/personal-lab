@@ -30,6 +30,8 @@ nodes:
     ipAddress: 172.16.101.0
     installDisk: &proxmoxDisk /dev/vda
     controlPlane: true
+    nameservers:
+      - &internalDmzDns "172.16.100.1"
     networkInterfaces:
       - deviceSelector:
           physical: true
@@ -52,6 +54,8 @@ nodes:
     ipAddress: 172.16.101.1
     installDisk: *proxmoxDisk
     controlPlane: true
+    nameservers:
+      - *internalDmzDns
     networkInterfaces:
       - deviceSelector:
           physical: true
@@ -67,6 +71,8 @@ nodes:
     ipAddress: 172.16.101.2
     installDisk: *proxmoxDisk
     controlPlane: true
+    nameservers:
+      - *internalDmzDns
     networkInterfaces:
       - deviceSelector:
           physical: true
@@ -84,6 +90,8 @@ nodes:
     controlPlane: false
     nodeLabels:
       intel.feature.node.kubernetes.io/gpu: "true"
+    nameservers:
+      - &dmzDns 172.16.30.1
     networkInterfaces:
       - deviceSelector:
           physical: true
@@ -98,6 +106,8 @@ nodes:
     ipAddress: 172.16.30.11
     installDisk: *proxmoxDisk
     controlPlane: false
+    nameservers:
+      - *dmzDns
     networkInterfaces:
       - deviceSelector:
           physical: true
@@ -110,6 +120,8 @@ nodes:
     ipAddress: 172.16.30.12
     installDisk: *proxmoxDisk
     controlPlane: false
+    nameservers:
+      - *dmzDns
     networkInterfaces:
       - deviceSelector:
           physical: true
@@ -140,9 +152,7 @@ nodes:
 patches:
   - "@./patches/global/machine-files.yaml"
   - "@./patches/global/machine-kubelet.yaml"
-  - "@./patches/global/machine-network.yaml"
   - "@./patches/global/machine-sysctls.yaml"
-  - "@./patches/global/machine-time.yaml"
 
 # Controller patches
 controlPlane:
