@@ -15,15 +15,15 @@ endpoint: https://new-island.prd.elrey.casa:6443
 additionalApiServerCertSans: &sans
   - new-island.prd.elrey.casa
   - 127.0.0.1
-  - &talosControlplaneVip 172.16.20.40
+  - &talosControlplaneVip 172.16.100.255
 additionalMachineCertSans: *sans
 
 clusterPodNets: ["10.224.0.0/16"]
 clusterSvcNets: ["10.240.0.0/16"]
 
-# Disable built-in CNI to use Cilium
-cniConfig:
-  name: none
+# Disable built-in CNI to use Cilium (a CNI is required to be marked ready...so comment out if debugging)
+# cniConfig:
+#   name: none
 
 nodes:
   - hostname: k8s-prod-cp1
@@ -42,6 +42,8 @@ nodes:
           - &internalDmzRoutes
             network: "0.0.0.0/0"
             gateway: "172.16.100.1"
+        vip:
+          ip: *talosControlplaneVip
   - hostname: k8s-prod-cp2
     ipAddress: 172.16.101.1
     installDisk: *proxmoxDisk
@@ -56,6 +58,8 @@ nodes:
           - 172.16.101.1/23
         routes:
           - *internalDmzRoutes
+        vip:
+          ip: *talosControlplaneVip
 
   - hostname: "k8s-prod-cp3"
     ipAddress: 172.16.101.2
@@ -71,11 +75,21 @@ nodes:
           - 172.16.101.2/23
         routes:
           - *internalDmzRoutes
+        vip:
+          ip: *talosControlplaneVip
 
   # - hostname: "k8s-prod-wr1"
   #   ipAddress: 172.16.30.10
   #   installDisk: /dev/sda
   #   controlPlane: false
+  #   # since this physical worker node has an Intel CPU
+  #   imageSchematic:
+  #     customization:
+  #       systemExtensions:
+  #         officialExtensions:
+  #           - siderolabs/i915-ucode
+  #           - siderolabs/intel-ice-firmware
+  #           - siderolabs/intel-ucode
   #   nodeLabels:
   #     intel.feature.node.kubernetes.io/gpu: "true"
   #   nameservers:
@@ -168,9 +182,6 @@ worker:
           # - siderolabs/gasket-driver
           # for proxmox
           - siderolabs/qemu-guest-agent
-          # for laptop
-          - siderolabs/i915
-          - siderolabs/intel-ucode
           # from blog
           - siderolabs/iscsi-tools
           - siderolabs/util-linux-tools
