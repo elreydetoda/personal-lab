@@ -22,10 +22,11 @@ in
     age
     direnv
     bash-completion
-    pkgs-unstable.talhelper
-    pkgs-unstable.talosctl
-    pkgs-unstable.kubectl
-    pkgs-unstable.terragrunt
+    pkgs-unstable.talhelper # 3.0.31
+    pkgs-unstable.talosctl # 1.10.4
+    pkgs-unstable.kubectl # 1.33.2
+    pkgs-unstable.terragrunt # 0.83.2
+    pkgs-unstable.fluxcd # 2.6.4
   ];
 
   # https://devenv.sh/languages/

@@ -1,15 +1,18 @@
 ---
 keys:
   - &personal age14cdcayq0xjt2aqwn3zd04q6wtj74tg04vjcpush6mw5p85h2appqhvz6fl
+  - &flux age19n5t8k86ademjs63m9etnd40klav4gcwldkxz0e3ey7llvmql94qafdr5z
 
 creation_rules:
   - path_regex: talos/.*\.sops\.ya?ml
     # mac_only_encrypted: true
     age: *personal
-  - path_regex: (bootstrap|kubernetes)/.*\.sops\.ya?ml
+  - path_regex: kubernetes/.*\.sops\.ya?ml
     encrypted_regex: "^(data|stringData)$"
     # mac_only_encrypted: true
-    age: *personal
+    age:
+      - *personal
+      - *flux
 stores:
   yaml:
     indent: 2
