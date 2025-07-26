@@ -6,13 +6,16 @@ keys:
 creation_rules:
   - path_regex: talos/.*\.sops\.ya?ml
     # mac_only_encrypted: true
-    age: *personal
+    key_groups:
+      - age:
+          - *personal
   - path_regex: kubernetes/.*\.sops\.ya?ml
     encrypted_regex: "^(data|stringData)$"
     # mac_only_encrypted: true
-    age:
-      - *personal
-      - *flux
+    key_groups:
+      - age:
+          - *personal
+          - *flux
 stores:
   yaml:
     indent: 2

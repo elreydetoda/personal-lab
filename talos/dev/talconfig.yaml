@@ -5,18 +5,18 @@
 #   - https://github.com/budimanjojo/talhelper/blob/fb87d9313d1605ef68602881bebf5af8d782eb51/example/talconfig.yaml
 #   - https://github.com/bjw-s-labs/home-ops/blob/c4b67b45bf74214ac2363c71cd286b5203990049/kubernetes/talos/talconfig.yaml
 ---
-clusterName: pokemon-palace
+clusterName: pokemon-gym
 
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
 talosVersion: v1.10.5
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
 kubernetesVersion: v1.33.3
 
-endpoint: https://new-island.prd.elrey.casa:6443
+endpoint: https://pallet-town.dev.elrey.casa:6443
 additionalApiServerCertSans: &sans
-  - new-island.prd.elrey.casa
+  - pallet-town.dev.elrey.casa
   - 127.0.0.1
-  - &talosControlplaneVip 172.16.100.255
+  - &talosControlplaneVip 172.16.100.99
 additionalMachineCertSans: *sans
 
 clusterPodNets: ["10.224.0.0/16"]
@@ -27,8 +27,8 @@ clusterSvcNets: ["10.240.0.0/16"]
 #   name: none
 
 nodes:
-  - hostname: k8s-prod-cp1
-    ipAddress: 172.16.101.0
+  - hostname: k8s-dev-cp1
+    ipAddress: 172.16.100.100
     installDisk: &proxmoxDisk /dev/vda
     controlPlane: true
     nameservers:
@@ -38,53 +38,17 @@ nodes:
           physical: true
         dhcp: false
         addresses:
-          - 172.16.101.0/23
+          - 172.16.100.100/23
         routes:
           - &internalDmzRoutes
             network: "0.0.0.0/0"
             gateway: "172.16.100.1"
         vip:
           ip: *talosControlplaneVip
-  - hostname: k8s-prod-cp2
-    ipAddress: 172.16.101.1
+  - hostname: "k8s-dev-wr1"
+    ipAddress: 172.16.30.5
     installDisk: *proxmoxDisk
-    controlPlane: true
-    nameservers:
-      - *internalDmzDns
-    networkInterfaces:
-      - deviceSelector:
-          physical: true
-        dhcp: false
-        addresses:
-          - 172.16.101.1/23
-        routes:
-          - *internalDmzRoutes
-        vip:
-          ip: *talosControlplaneVip
-
-  - hostname: "k8s-prod-cp3"
-    ipAddress: 172.16.101.2
-    installDisk: *proxmoxDisk
-    controlPlane: true
-    nameservers:
-      - *internalDmzDns
-    networkInterfaces:
-      - deviceSelector:
-          physical: true
-        dhcp: false
-        addresses:
-          - 172.16.101.2/23
-        routes:
-          - *internalDmzRoutes
-        vip:
-          ip: *talosControlplaneVip
-
-  - hostname: "k8s-prod-wr1"
-    ipAddress: 172.16.30.10
-    installDisk: /dev/sda
     controlPlane: false
-    nodeLabels:
-      intel.feature.node.kubernetes.io/gpu: "true"
     nameservers:
       - &dmzDns 172.16.30.1
     networkInterfaces:
@@ -92,52 +56,11 @@ nodes:
           physical: true
         dhcp: false
         addresses:
-          - 172.16.30.10/24
+          - 172.16.30.5/24
         routes:
           - &dmzRoutes
             network: "0.0.0.0/0"
             gateway: "172.16.30.1"
-    # since this physical worker node has an Intel CPU
-    # imageSchematic:
-    #   customization:
-    #     systemExtensions:
-    #       officialExtensions:
-    #         - siderolabs/i915
-    #         - siderolabs/intel-ice-firmware
-    #         - siderolabs/intel-ucode
-    #         # from blog
-    #         - siderolabs/iscsi-tools
-    #         - siderolabs/util-linux-tools
-    # (not overriding as expected & still installing qemu-guest-agent ext...so, using direct URL)
-    talosImageURL: factory.talos.dev/metal-installer/26c78806b5a467ef3d9b807b2f5d3efa493f01a6c0c2b6fc78d7a71051f1635a
-  - hostname: "k8s-prod-wr2"
-    ipAddress: 172.16.30.11
-    installDisk: *proxmoxDisk
-    controlPlane: false
-    nameservers:
-      - *dmzDns
-    networkInterfaces:
-      - deviceSelector:
-          physical: true
-        dhcp: false
-        addresses:
-          - 172.16.30.11/24
-        routes:
-          - *dmzRoutes
-  - hostname: "k8s-prod-wr3"
-    ipAddress: 172.16.30.12
-    installDisk: *proxmoxDisk
-    controlPlane: false
-    nameservers:
-      - *dmzDns
-    networkInterfaces:
-      - deviceSelector:
-          physical: true
-        dhcp: false
-        addresses:
-          - 172.16.30.12/24
-        routes:
-          - *dmzRoutes
 
 # Global patches
 patches:
