@@ -27,6 +27,7 @@ in
     pkgs-unstable.kubectl # 1.33.2
     pkgs-unstable.terragrunt # 0.83.2
     pkgs-unstable.fluxcd # 2.6.4
+    pkgs-unstable.kubernetes-helm # 3.18.4
   ];
 
   # https://devenv.sh/languages/
