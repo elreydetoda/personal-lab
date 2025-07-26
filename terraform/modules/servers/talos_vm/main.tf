@@ -10,13 +10,25 @@ resource "proxmox_virtual_environment_vm" "talos_node" {
 
   cpu {
     # worker nodes get 5 CPU cores & control plane gets 2
-    cores = var.talos_worker_node ? 5 : 2
+    cores = (
+      var.env == "prod" ?
+        # production cpu count differ based on nodes
+        var.talos_worker_node ? 5 : 2 :
+        # dev just gets minimum
+        2
+    )
     type = "x86-64-v2-AES"
   }
 
   memory {
     # worker nodes get 16GB cores & control plane gets 4GB
-    dedicated = var.talos_worker_node ? 15360 : 4096
+    dedicated = (
+      var.env == "prod" ?
+        # production memory differ based on nodes
+        var.talos_worker_node ? 15360 : 4096 :
+        # dev just gets minimum
+        4096
+    )
   }
 
   agent {
