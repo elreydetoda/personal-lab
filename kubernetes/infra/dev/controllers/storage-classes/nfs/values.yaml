@@ -1,0 +1,5 @@
+nfs:
+  server: "172.16.20.21"
+  path: "/mnt/constraint/k8s_data/dev"
+storageClass:
+  onDelete: true

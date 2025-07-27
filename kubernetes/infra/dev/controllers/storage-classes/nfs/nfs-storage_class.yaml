@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://json.schemastore.org/helmfile
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: storage-nfs
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: nfs-store
+  namespace: storage-nfs
+spec:
+  interval: 10m0s
+  url: https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmChart
+metadata:
+  name: nfs-client
+  namespace: storage-nfs
+spec:
+  interval: 10m0s
+  chart: nfs-subdir-external-provisioner
+  reconcileStrategy: ChartVersion
+  version: "4.0.*"
+  sourceRef:
+    kind: HelmRepository
+    name: nfs-store
+  valuesFiles:
+    - values.yaml

@@ -11,7 +11,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infra/prod/controllers
+  path: ./kubernetes/infra/prod/controllers
   prune: true
   wait: true
 ---
@@ -29,7 +29,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infra/prod/configs
+  path: ./kubernetes/infra/prod/configs
   prune: true
   # patches:
   #   - patch: |
