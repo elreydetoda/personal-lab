@@ -22,6 +22,7 @@ in
     age
     direnv
     bash-completion
+    yq
     pkgs-unstable.talhelper # 3.0.31
     pkgs-unstable.talosctl # 1.10.4
     pkgs-unstable.kubectl # 1.33.2
