@@ -5,3 +5,4 @@ resources:
   - storage-classes/nfs/nfs-storage_class.yaml
   - tailscale/tailscale-secrets.sops.yaml
   - tailscale/tailscale.yaml
+  - metallb/metallb.yaml
