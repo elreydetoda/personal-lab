@@ -21,7 +21,9 @@ metadata:
 spec:
   interval: 10m0s
   path: ./kubernetes/clusters/production
-  prune: true
+  ## FIXME: temporarily doing till I figure out a better way for SOPS & AGE decryption in cluster...commenting out so it doesn't wipe the manually provisioned key
+  # prune: true
+  prune: false
   sourceRef:
     kind: GitRepository
     name: flux-system
