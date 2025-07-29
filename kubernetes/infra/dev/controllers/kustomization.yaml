@@ -6,3 +6,4 @@ resources:
   - tailscale/tailscale-secrets.sops.yaml
   - tailscale/tailscale.yaml
   - metallb/metallb.yaml
+  - ingress/traefik.yaml

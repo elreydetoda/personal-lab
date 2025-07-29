@@ -18,3 +18,8 @@ label:
   # https://raw.githubusercontent.com/kubernetes/website/main/content/en/examples/security/podsecurity-privileged.yaml
   # https://github.com/fluxcd/flux2/issues/4603#issuecomment-1939753221
   # not working correctly...manually overrode with: kubectl --field-manager=flux-client-side-apply label namespaces metallb pod-security.kubernetes.io/enforce=privileged
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: traefik

@@ -1,0 +1,20 @@
+# https://github.com/techno-tim/launchpad/blob/928bed1d961e8e3e34f5ef747cb4f004e34d3895/kubernetes/traefik-cert-manager/traefik/default-headers.yaml
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: default-headers
+  namespace: default
+spec:
+  headers:
+    browserXssFilter: true
+    contentTypeNosniff: true
+    ## commenting out for now since exposing only internally & over Tailscale
+    # forceSTSHeader: true
+    # stsIncludeSubdomains: true
+    # stsPreload: true
+    # stsSeconds: 15552000
+    # referrerPolicy: no-referrer
+    # contentSecurityPolicy: "default-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https: data:; connect-src 'self' https:; frame-src 'self' https:; media-src 'self' https:; object-src 'none'; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
+    customFrameOptionsValue: SAMEORIGIN
+    customRequestHeaders:
+      X-Forwarded-Proto: https
